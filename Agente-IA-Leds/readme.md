@@ -1,4 +1,4 @@
-# Documentação do Projeto: PDF to Blog - Agentes Inteligentes para Processamento de Documentos
+# Documentação Completa: PDF to Blog - Desafio LEDS
 
 ## Sumário
 - [Visão Geral](#visão-geral)
@@ -11,19 +11,17 @@
   - [Ferramentas](#ferramentas)
   - [Serviços](#serviços)
 - [API REST](#api-rest)
-  - [Endpoints](#endpoints)
-  - [Exemplos de Uso](#exemplos-de-uso)
 - [Fluxo de Processamento](#fluxo-de-processamento)
-- [Formato de Saída](#formato-de-saída)
-- [Tratamento de Erros](#tratamento-de-erros)
-- [Logs e Monitoramento](#logs-e-monitoramento)
+- [Testes](#testes)
+- [Integração Contínua](#integração-contínua)
+- [Análise de Qualidade de Código](#análise-de-qualidade-de-código)
 
 
 ## Visão Geral
 
-O projeto "PDF to Blog" é uma solução baseada em agentes inteligentes para processar documentos em formato PDF, extrair informações relevantes, gerar resumos concisos e transformá-los em posts de blog bem estruturados. 
+O projeto "PDF to Blog" é uma solução baseada em agentes inteligentes para processar documentos PDF, extrair informações relevantes, gerar resumos concisos e transformá-los em posts de blog bem estruturados.
 
-O sistema utiliza o framework CrewAI para orquestrar múltiplos agentes especializados, cada um responsável por uma etapa específica do processo de transformação. Além da funcionalidade principal de processamento em lote, o projeto inclui uma API REST completa que permite interagir com o sistema através de requisições HTTP.
+O sistema utiliza o framework CrewAI para orquestrar múltiplos agentes especializados, cada um responsável por uma etapa específica do processo. Além da funcionalidade principal de processamento em lote, o projeto inclui uma API REST que permite interagir com o sistema através de requisições HTTP.
 
 ### Objetivos do Projeto
 
@@ -31,7 +29,8 @@ O sistema utiliza o framework CrewAI para orquestrar múltiplos agentes especial
 2. Identificar informações relevantes nos documentos
 3. Gerar resumos concisos e informativos
 4. Formatar o conteúdo como posts de blog bem estruturados
-5. Disponibilizar o serviço através de uma API REST
+5. Disponibilizar a funcionalidade através de uma API REST
+6. Implementar práticas modernas de desenvolvimento (CI/CD, análise de código)
 
 ## Arquitetura do Sistema
 
@@ -56,13 +55,17 @@ O sistema está estruturado em camadas, seguindo princípios de arquitetura modu
 
 ## Tecnologias Utilizadas
 
-- **Linguagem Principal**: Python 3.8+
+- **Linguagem Principal**: Python 3.10+
 - **Framework de Agentes**: CrewAI 0.105.0
 - **Processamento de PDF**: PyPDF2 3.0.1, pdfplumber 0.11.5
 - **Modelos de IA**: Gemini (via crewai-tools 0.37.0)
 - **API Web**: FastAPI 0.115.11, Uvicorn 0.34.0
 - **Integração com LLMs**: LangChain 0.3.20, OpenAI 1.65.5
-- **Configuração**: python-dotenv 1.0.1
+- **Testes**: pytest 8.3.5, pytest-cov 6.0.0, coverage 7.6.12
+- **Formatação e Linting**: black 24.8.0, isort 5.13.2, flake8 7.0.0
+- **CI/CD**: GitHub Actions
+- **Análise de Qualidade**: SonarQube
+- **Gerenciamento de Dependências**: pip, setuptools
 
 ## Estrutura do Projeto
 
@@ -70,10 +73,14 @@ O sistema está estruturado em camadas, seguindo princípios de arquitetura modu
 desafio-leds-pdf-blog/
 ├── README.md                   # Documentação geral do projeto
 ├── requirements.txt            # Dependências do projeto
-├── pdfs/                       # Diretório para armazenar os PDFs de entrada
-├── resultados/                 # Diretório onde os posts de blog são salvos
-├── templates/                  # Templates para interface web
-│   └── index.html              # Interface web para uso da API
+├── setup.py                    # Configuração para instalação do pacote
+├── sonar-project.properties    # Configuração para análise SonarQube
+├── .github/                    # Configurações do GitHub
+│   └── workflows/
+│       ├── ci.yml              # Workflow de CI/CD
+│       └── sonarqube.yml       # Workflow para análise SonarQube
+├── pdfs/                       # Diretório para PDFs de entrada
+├── resultados/                 # Diretório para posts de blog gerados
 ├── src/
 │   ├── __init__.py
 │   ├── main.py                 # Ponto de entrada para processamento em lote
@@ -85,7 +92,7 @@ desafio-leds-pdf-blog/
 │   ├── agents/
 │   │   ├── __init__.py
 │   │   ├── pdf_reader_agent.py # Agente para leitura de PDFs
-│   │   ├── analysis_agent.py   # Agente para análise e extração de informações
+│   │   ├── analysis_agent.py   # Agente para análise de informações
 │   │   ├── summary_agent.py    # Agente para geração de resumos
 │   │   └── format_agent.py     # Agente para formatação de blog posts
 │   ├── tools/
@@ -102,15 +109,21 @@ desafio-leds-pdf-blog/
 │   └── utils/
 │       ├── __init__.py
 │       └── helpers.py          # Funções auxiliares
-└── tests/                      # Testes (a serem implementados)
+└── tests/
+    ├── __init__.py
+    ├── test_basic.py           # Testes básicos de importação
+    ├── test_agents/
+    │   └── test_tools/
+    │       └── test_pdf_tools.py # Testes para ferramentas de PDF
 ```
 
 ## Requisitos e Instalação
 
 ### Pré-requisitos
 
-- Python 3.8 ou superior
+- Python 3.10 ou superior
 - Chaves de API para serviços de IA (Google/Gemini)
+- Git (para clonar o repositório)
 
 ### Instalação
 
@@ -125,7 +138,12 @@ cd desafio-leds-pdf-blog
 pip install -r requirements.txt
 ```
 
-3. Configure as variáveis de ambiente:
+3. Instale o projeto em modo de desenvolvimento:
+```bash
+pip install -e .
+```
+
+4. Configure as variáveis de ambiente:
    - Crie um arquivo `.env` na raiz do projeto
    - Adicione suas chaves de API:
 ```
@@ -133,14 +151,16 @@ GOOGLE_API_KEY=sua-chave-google-api
 GEMINI_API_KEY=sua-chave-gemini-api
 ```
 
-4. Crie as pastas necessárias (se não existirem):
+5. Crie as pastas necessárias (se não existirem):
 ```bash
-mkdir -p pdfs resultados templates
+mkdir -p pdfs resultados
 ```
 
 ### Executando o Projeto
 
 #### Processamento em Lote (CLI)
+
+Para processar PDFs em lote via linha de comando:
 
 ```bash
 python -m src.main
@@ -148,13 +168,15 @@ python -m src.main
 
 #### Servidor API
 
+Para iniciar o servidor API:
+
 ```bash
 python -m src.server
 ```
 
 Após iniciar o servidor, acesse:
 - http://localhost:8000/docs - Para documentação interativa da API
-- http://localhost:8000/ui - Para interface web (se implementada)
+- http://localhost:8000 - Para a API principal
 
 ## Componentes Principais
 
@@ -222,7 +244,6 @@ A API REST é implementada usando FastAPI e oferece endpoints para todas as func
 | POST | /process/{filename} | Processa um PDF específico |
 | POST | /process-all/ | Processa todos os PDFs disponíveis |
 | GET | /result/{filename} | Obtém um arquivo de resultado específico |
-| GET | /ui | Interface web para uso da API |
 | DELETE | /pdfs/{filename} | Remove um PDF específico |
 | DELETE | /results/{filename} | Remove um arquivo de resultado |
 
@@ -289,48 +310,70 @@ curl -X 'GET' \
 6. **Armazenamento do Resultado**
    - Salvamento do post formatado na pasta `resultados/`
 
-## Formato de Saída
+## Testes
 
-O sistema gera posts de blog em formato Markdown (.md) com a seguinte estrutura:
+O projeto utiliza pytest para testes automatizados. A estrutura de testes inclui:
 
-```markdown
-# Título Chamativo e Relevante
+1. **Testes Básicos**
+   - Verifica importações corretas de módulos
 
-Introdução envolvente que contextualiza o assunto...
+2. **Testes de Ferramentas**
+   - Testes para as ferramentas de processamento de PDF
+   - Verifica se os PDFs são corretamente encontrados e processados
 
-## Subtítulo da Primeira Seção
+3. **Cobertura de Código**
+   - Relatório de cobertura gerado para análise do SonarQube
 
-Conteúdo da primeira seção...
+### Executando os Testes
 
-## Subtítulo da Segunda Seção
+```bash
+# Executar todos os testes
+pytest
 
-Conteúdo da segunda seção...
-
-## Conclusão
-
-Reflexões finais e encerramento do tema...
+# Executar testes com cobertura
+pytest --cov=src tests/ --cov-report=xml
 ```
 
-## Tratamento de Erros
+## Integração Contínua
 
-O sistema implementa tratamento robusto de erros através de classes de exceção personalizadas:
+O projeto utiliza GitHub Actions para automação de CI/CD. Dois workflows principais são configurados:
 
-- `pdfnotfounderror`: Quando não há PDFs no diretório especificado
-- `pdfextractionerror`: Quando ocorre um erro ao extrair texto do PDF
-- `agentprocessingerror`: Quando um agente encontra um problema no processamento
+### CI/CD Pipeline
 
-As exceções são capturadas e registradas no sistema de log, permitindo diagnóstico e resolução de problemas.
+Arquivo: `.github/workflows/ci.yml`
 
-## Logs e Monitoramento
+Este workflow é acionado em pushes e pull requests para branches principais:
 
-O sistema utiliza um módulo de logging personalizado que registra:
+1. **Testes**: Executa testes unitários, verifica formatação e gera relatório de cobertura
+2. **Build**: Cria um pacote instalável do projeto
 
-- Início e fim do processamento de cada PDF
-- Progresso da extração de texto por página
-- Transições entre agentes
-- Erros e exceções
-- Resultados do processamento
+### Análise de Qualidade de Código
 
-Os logs são salvos em arquivo e também exibidos no console.
+Arquivo: `.github/workflows/sonarqube.yml`
 
+Este workflow é acionado para analisar a qualidade do código:
+
+1. Executa testes com cobertura
+2. Envia os resultados para o SonarQube
+3. Utiliza segredos configurados (SONAR_TOKEN, SONAR_HOST_URL) para autenticação
+
+## Análise de Qualidade de Código
+
+O projeto utiliza SonarQube para análise estática de código. A configuração é definida no arquivo `sonar-project.properties`.
+
+### Métricas Atuais
+
+- **Bugs**: 0
+- **Vulnerabilidades**: 0
+- **Code Smells**: 2
+- **Cobertura**: 0,0% de linhas não cobertas (cobertura excelente)
+- **Duplicação**: 11,0%
+- **Linhas de Código**: 432
+
+### Executando a Análise Localmente
+
+```bash
+# Garantir que o SonarQube esteja rodando (Docker ou instalação local)
+sonar-scanner -Dsonar.host.url=http://localhost:9000 -Dsonar.login="seu-token"
+```
 
