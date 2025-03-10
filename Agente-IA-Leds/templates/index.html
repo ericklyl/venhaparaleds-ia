@@ -1,0 +1,235 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF to Blog Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .upload-area {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            text-align: center;
+        }
+        .pdf-list {
+            margin-top: 30px;
+        }
+        .pdf-item {
+            padding: 10px;
+            margin-bottom: 5px;
+            border: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn-danger {
+            background-color: #f44336;
+        }
+        .btn-primary {
+            background-color: #008CBA;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PDF to Blog Converter</h1>
+        
+        <div class="upload-area">
+            <h2>Upload PDF</h2>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input type="file" id="pdfFile" accept=".pdf" />
+                <button type="submit" class="btn">Upload</button>
+            </form>
+        </div>
+        
+        <div class="pdf-list">
+            <h2>PDFs disponíveis</h2>
+            <button id="refreshBtn" class="btn btn-primary">Atualizar lista</button>
+            <button id="processAllBtn" class="btn">Processar todos</button>
+            <div id="pdfListContainer"></div>
+        </div>
+        
+        <div class="pdf-list">
+            <h2>Resultados</h2>
+            <div id="resultsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Função para carregar a lista de PDFs
+        function loadPDFs() {
+            fetch('/pdfs/')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('pdfListContainer');
+                    container.innerHTML = '';
+                    
+                    if (data.pdfs.length === 0) {
+                        container.innerHTML = '<p>Nenhum PDF disponível</p>';
+                        return;
+                    }
+                    
+                    data.pdfs.forEach(pdf => {
+                        const div = document.createElement('div');
+                        div.className = 'pdf-item';
+                        
+                        div.innerHTML = `
+                            <span>${pdf}</span>
+                            <div>
+                                <button class="btn process-btn" data-filename="${pdf}">Processar</button>
+                                <button class="btn btn-danger delete-btn" data-filename="${pdf}">Excluir</button>
+                            </div>
+                        `;
+                        
+                        container.appendChild(div);
+                    });
+                    
+                    // Adicionar event listeners
+                    document.querySelectorAll('.process-btn').forEach(btn => {
+                        btn.addEventListener('click', processPDF);
+                    });
+                    
+                    document.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', deletePDF);
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar PDFs:', error));
+        }
+        
+        // Função para carregar resultados
+        function loadResults() {
+            // Esta função seria implementada para listar os resultados disponíveis
+            // Similar à loadPDFs, mas buscando de um endpoint diferente
+        }
+        
+        // Função para processar um PDF
+        function processPDF(event) {
+            const filename = event.target.getAttribute('data-filename');
+            
+            fetch(`/process/${filename}`, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao processar PDF');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(`PDF processado com sucesso: ${filename}`);
+                loadResults();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao processar o PDF');
+            });
+        }
+        
+        // Função para excluir um PDF
+        function deletePDF(event) {
+            const filename = event.target.getAttribute('data-filename');
+            
+            if (confirm(`Tem certeza que deseja excluir o PDF: ${filename}?`)) {
+                fetch(`/pdfs/${filename}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao excluir PDF');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.message);
+                    loadPDFs();
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao excluir o PDF');
+                });
+            }
+        }
+        
+        // Event Listeners
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('pdfFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Por favor, selecione um arquivo PDF');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/upload-pdf/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro no upload');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message);
+                fileInput.value = '';
+                loadPDFs();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao fazer upload do arquivo');
+            });
+        });
+        
+        document.getElementById('refreshBtn').addEventListener('click', loadPDFs);
+        
+        document.getElementById('processAllBtn').addEventListener('click', function() {
+            fetch('/process-all/', {
+                method: 'POST'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao processar PDFs');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(`Processamento concluído. ${data.results.length} PDFs processados.`);
+                loadResults();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao processar os PDFs');
+            });
+        });
+        
+        // Carregar PDFs e resultados ao iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPDFs();
+            loadResults();
+        });
+    </script>
+</body>
+</html>
