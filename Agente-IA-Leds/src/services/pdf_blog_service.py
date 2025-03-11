@@ -1,8 +1,8 @@
 from crewai import Crew
-from exceptions import agentprocessingerror
-from logging_config import log
-from tools.text_processing_tools import extrair_texto_pdf
-from agents import agt_ler_pdf, agt_extrai_pdf, agt_gera_resumo, agt_formata_docs
+from src.exceptions import agentprocessingerror
+from src.logging_config import log
+from src.tools.text_processing_tools import extrair_texto_pdf
+from src.agents import agt_ler_pdf, agt_extrai_pdf, agt_gera_resumo, agt_formata_docs
 from crewai import Task
 
 def processar_pdfs(lista_pdfs):

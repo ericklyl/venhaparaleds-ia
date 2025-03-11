@@ -1,4 +1,4 @@
-# src/api.py
+import src.helper 
 import os
 import shutil
 from pathlib import Path
@@ -8,12 +8,15 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+# Para execução local
+# from services.pdf_blog_service import processar_pdfs
 
-from services.pdf_blog_service import processar_pdfs
-from tools.pdf_tools import pega_pdfs
-from exceptions import pdfnotfounderror
-from logging_config import log
-from utils.helpers import salvar_resultado
+# Para execução no Docker
+from src.services.pdf_blog_service import processar_pdfs
+from src.tools.pdf_tools import pega_pdfs
+from src.exceptions import pdfnotfounderror
+from src.logging_config import log
+from src.utils.helpers import salvar_resultado
 from fastapi.responses import HTMLResponse
 
 

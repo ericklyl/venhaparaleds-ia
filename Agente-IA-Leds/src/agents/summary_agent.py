@@ -2,7 +2,7 @@
 Agente responsável pela geração de resumos.
 """
 from crewai import Agent, LLM
-from config import GEMINI_API_KEY
+from src.config import GEMINI_API_KEY
 
 # configura modelo de ia
 gemini_llm = LLM(

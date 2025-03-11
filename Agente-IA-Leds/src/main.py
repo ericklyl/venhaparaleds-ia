@@ -1,11 +1,11 @@
 import os
 from pathlib import Path
-from tools.pdf_tools import pega_pdfs
-from services.pdf_blog_service import processar_pdfs
-from exceptions import pdfnotfounderror
-from logging_config import log
-from utils.helpers import salvar_resultado
-from config import PDF_DIR
+from src.tools.pdf_tools import pega_pdfs
+from src.services.pdf_blog_service import processar_pdfs
+from src.exceptions import pdfnotfounderror
+from src.logging_config import log
+from src.utils.helpers import salvar_resultado
+from src.config import PDF_DIR
 
 ROOT_DIR = Path(__file__).parent.parent
 # diretório onde os pdfs estão

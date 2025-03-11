@@ -2,7 +2,7 @@
 Agente responsável pela análise e extração de informações
 """
 from crewai import Agent, LLM
-from config import GEMINI_API_KEY
+from src.config import GEMINI_API_KEY
 
 # configurar modelo de ia
 gemini_llm = LLM(
