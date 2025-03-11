@@ -66,9 +66,9 @@ O sistema está estruturado em camadas, seguindo princípios de arquitetura modu
 - **CI/CD**: GitHub Actions
 - **Análise de Qualidade**: SonarQube
 - **Gerenciamento de Dependências**: pip, setuptools
-- - **Docker**
+- **Docker**
 
- ##Todos os diferenciais foram implementados!
+## Todos os diferenciais foram implementados!
 
 ## Estrutura do Projeto
 
