@@ -55,7 +55,7 @@ O sistema está estruturado em camadas, seguindo princípios de arquitetura modu
 
 ## Tecnologias Utilizadas
 
-- **Linguagem Principal**: Python 3.10+
+- **Linguagem Principal**: Python 3.12+
 - **Framework de Agentes**: CrewAI 0.105.0
 - **Processamento de PDF**: PyPDF2 3.0.1, pdfplumber 0.11.5
 - **Modelos de IA**: Gemini (via crewai-tools 0.37.0)
