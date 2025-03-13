@@ -152,6 +152,7 @@ pip install -e .
 ```
 GOOGLE_API_KEY=sua-chave-google-api
 GEMINI_API_KEY=sua-chave-gemini-api
+OPENAI_API_KEY=FAKE_KEY
 ```
 
 5. Crie as pastas necessárias (se não existirem):
